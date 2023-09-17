@@ -43,7 +43,10 @@ class AuthService:
         )
         try:
             payload = jwt.decode(
-                token, settings.jwt_secret, algorithms=settings.jwt_algoritm
+                token,
+                settings.jwt_secret,
+                audience=settings.access_audience,
+                algorithms=settings.jwt_algoritm,
             )
         except JWTError:
             raise exception from None
@@ -59,7 +62,7 @@ class AuthService:
         return user
 
     @classmethod
-    async def create_token(cls, user: UserCreate) -> Token:
+    async def create_access_token(cls, user: UserCreate) -> Token:
         user_data = User(**user)
         now = datetime.datetime.utcnow()
         payload = {
@@ -67,6 +70,7 @@ class AuthService:
             "nbf": now,
             "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
             "sub": str(user_data.id),
+            "aud": settings.access_audience,
             "user": user_data.model_dump_json(),
         }
         token = jwt.encode(
@@ -77,35 +81,24 @@ class AuthService:
         return Token(access_token=token)
 
     @classmethod
-    async def create_password_reset_token(cls, email: str) -> str:
+    async def create_recover_token(cls, user: UserCreate) -> Token:
+        user_data = User(**user)
         now = datetime.datetime.utcnow()
         payload = {
             "iat": now,
             "nbf": now,
-            "exp": now + datetime.timedelta(seconds=settings.jwt_reset_jwt_expiration),
-            "sub": email,
+            "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
+            "sub": str(user_data.id),
+            "aud": settings.recover_audience,
+            "user": user_data.model_dump_json(),
         }
-        encoded_jwt = jwt.encode(
+        token = jwt.encode(
             payload,
             settings.jwt_secret,
-            algorithm="HS256",
+            algorithm=settings.jwt_algoritm,
         )
-        return encoded_jwt
-
-    @classmethod
-    async def verify_password_reset_token(cls, token: str) -> Optional[str]:
-        exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not valid creditials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-        try:
-            decoded_token = jwt.decode(
-                token, settings.jwt_secret, algorithms=settings.jwt_algoritm
-            )
-            return decoded_token["sub"]
-        except JWTError:
-            raise exception from None
+        print(token)
+        return Token(access_token=token)
 
     def __init__(self, db: AsyncSession = Depends(get_async_session)):
         self.db = db
@@ -115,13 +108,21 @@ class AuthService:
             "id": uuid.uuid4(),
             "email": user_data.email,
             "username": user_data.username,
+            "name": user_data.name,
+            "surname": user_data.surname,
+            "img": user_data.img,
+            "sex": user_data.sex,
+            "birthdate": user_data.birthdate,
+            "is_verified": user_data.is_verified,
+            "is_superuser": user_data.is_superuser,
+            "is_writer": user_data.is_writer,
             "hashed_password": await self.hash_password(user_data.password),
         }
         await self.db.execute(insert(user_table).values(user))
 
         await self.db.commit()
 
-        return await self.create_token(user)
+        return await self.create_access_token(user)
 
     async def authenticate_user(self, username: str, password: str) -> Token:
         exception = HTTPException(
@@ -142,4 +143,48 @@ class AuthService:
         if not await self.verify_password(password, user.hashed_password):
             raise exception
 
-        return await self.create_token(user)
+        return await self.create_access_token(user)
+
+    async def recover_password(self, email: str) -> Token:
+        exception = HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Can't find user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        user = await self.db.execute(
+            select(user_table).filter(user_table.c.email == email)
+        )
+        user = user.all()
+        for row in user:
+            user = row._mapping
+        if not user:
+            raise exception
+        
+        return await self.create_recover_token(user)
+
+    async def validate_recover_token(self, token: str) -> bool:
+        exception = HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bad token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(
+                token,
+                settings.jwt_secret,
+                audience=settings.recover_audience,
+                algorithms=settings.jwt_algoritm,
+            )
+        except JWTError:
+            raise exception from None
+
+        user_data = payload.get("user")
+        user_data = json.loads(user_data)
+
+        try:
+            user = User.model_validate(user_data)
+
+        except ValidationError:
+            raise exception from None
+        
+        return True

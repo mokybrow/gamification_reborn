@@ -10,10 +10,15 @@ class Settings(
     project_name: str
     debug: bool
     database_url: str
+
     jwt_secret: str
     jwt_algoritm: str
     jwt_expiration: int = 3600
     jwt_reset_jwt_expiration: int = 3600
+
+    access_audience: str
+    recover_audience: str
+    verification_audience: str
 
     class Config:
         env_prefix = "GAM_"

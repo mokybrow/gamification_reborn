@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from fastapi import APIRouter, FastAPI
 
-from backend.transport.auth import router as test_router
+from backend.transport.auth_router import router as test_router
 
 from .settings import get_settings
 
