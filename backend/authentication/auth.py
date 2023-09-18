@@ -100,6 +100,28 @@ class AuthService:
         print(token)
         return Token(access_token=token)
 
+    @classmethod
+    async def create_verify_email_token(cls, user: UserCreate) -> Token:
+        user_data = User(**user)
+        now = datetime.datetime.utcnow()
+        payload = {
+            "iat": now,
+            "nbf": now,
+            "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
+            "sub": str(user_data.id),
+            "aud": settings.verification_audience,
+            "user": user_data.model_dump_json(),
+        }
+        token = jwt.encode(
+            payload,
+            settings.jwt_secret,
+            algorithm=settings.jwt_algoritm,
+        )
+
+        print(token)
+
+        return Token(access_token=token)
+
     def __init__(self, db: AsyncSession = Depends(get_async_session)):
         self.db = db
 
@@ -145,6 +167,50 @@ class AuthService:
 
         return await self.create_access_token(user)
 
+    async def verify_email_request(self, email: str) -> Token:
+        exception = HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Can't find user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        user = await self.db.execute(
+            select(user_table).filter(user_table.c.email == email)
+        )
+        user = user.all()
+        for row in user:
+            user = row._mapping
+        if not user:
+            raise exception
+
+        return await self.create_verify_email_token(user)
+
+    async def validate_veify_token(self, token: str) -> User:
+        exception = HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bad token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(
+                token,
+                settings.jwt_secret,
+                audience=settings.verification_audience,
+                algorithms=settings.jwt_algoritm,
+            )
+        except JWTError:
+            raise exception from None
+
+        user_data = payload.get("user")
+        user_data = json.loads(user_data)
+
+        try:
+            user = User.model_validate(user_data)
+
+        except ValidationError:
+            raise exception from None
+        
+        return user
+
     async def recover_password(self, email: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -159,10 +225,10 @@ class AuthService:
             user = row._mapping
         if not user:
             raise exception
-        
+
         return await self.create_recover_token(user)
 
-    async def validate_recover_token(self, token: str) -> bool:
+    async def validate_recover_token(self, token: str) -> User:
         exception = HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Bad token",
@@ -186,5 +252,5 @@ class AuthService:
 
         except ValidationError:
             raise exception from None
-        
-        return True
+
+        return user

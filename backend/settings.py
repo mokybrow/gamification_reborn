@@ -16,6 +16,11 @@ class Settings(
     jwt_expiration: int = 3600
     jwt_reset_jwt_expiration: int = 3600
 
+    mail_username: str
+    mail_password: str
+    mail_from: str
+    mail_from: str
+
     access_audience: str
     recover_audience: str
     verification_audience: str
