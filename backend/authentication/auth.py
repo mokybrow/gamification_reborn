@@ -10,6 +10,7 @@ from passlib.hash import bcrypt
 from pydantic import ValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from .utils import AuthUtils
 
 from backend.database import get_async_session
 from backend.models.auth import Token, User, UserCreate
@@ -125,7 +126,7 @@ class AuthService:
     def __init__(self, db: AsyncSession = Depends(get_async_session)):
         self.db = db
 
-    async def registration_user(self, user_data: UserCreate) -> Token:
+    async def registration_user(self, user_data: UserCreate, utils = AuthUtils) -> Token:
         user = {
             "id": uuid.uuid4(),
             "email": user_data.email,
@@ -140,8 +141,13 @@ class AuthService:
             "is_writer": user_data.is_writer,
             "hashed_password": await self.hash_password(user_data.password),
         }
+        if  await utils.get_user_by_email(db=self.db, email=user_data.email):
+            raise HTTPException(status_code=400, detail="User with this email exist")
+        
+        if  await utils.get_user_by_username(db=self.db, username=user_data.username):
+            raise HTTPException(status_code=400, detail="User with this username exist")
+        
         await self.db.execute(insert(user_table).values(user))
-
         await self.db.commit()
 
         return await self.create_access_token(user)

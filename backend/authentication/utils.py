@@ -4,19 +4,21 @@ from fastapi import Depends
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.authentication.auth import AuthService
 from backend.models.auth import (Token, User, UserCreate, UserUpdate,
                                  UserUpdateImg)
 from backend.models.database import user_table
 
 
 class AuthUtils:
-    async def get_user_by_email(self, email: str, db: AsyncSession):
+
+    @staticmethod
+    async def get_user_by_email( email: str, db: AsyncSession):
         query = select(user_table).where(user_table.c.email == email)
         result = await db.execute(query)
         return result.all()
-
-    async def get_user_by_username(self, username: str, db: AsyncSession):
+    
+    @staticmethod
+    async def get_user_by_username( username: str, db: AsyncSession):
         query = select(user_table).where(user_table.c.username == username)
         result = await db.execute(query)
         return result.all()
