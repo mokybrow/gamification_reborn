@@ -8,7 +8,7 @@ class Settings(
     BaseSettings,
 ):
     project_name: str
-    debug: bool
+    # debug: bool
     database_url: str
 
     jwt_secret: str
@@ -16,10 +16,10 @@ class Settings(
     jwt_expiration: int = 3600
     jwt_reset_jwt_expiration: int = 3600
 
-    mail_username: str
-    mail_password: str
-    mail_from: str
-    mail_from: str
+    # mail_username: str
+    # mail_password: str
+    # mail_from: str
+    # mail_from: str
 
     access_audience: str
     recover_audience: str

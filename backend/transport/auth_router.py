@@ -1,15 +1,19 @@
+import os
 from typing import Annotated, Any
+import uuid
 
-from fastapi import APIRouter, Body, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Body, Depends, FastAPI, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.authentication.auth import AuthService, get_current_user
 from backend.authentication.utils import AuthUtils
 from backend.database import get_async_session
-from backend.models.msg import Msg
+from backend.models.msg import Msg, VerifyToken
+from backend.services.cover_uploader import save_upload_cover
 
-from ..models.auth import Token, User, UserCreate, UserUpdate, UserUpdateImg
+from ..models.auth import ResetPassword, Token, User, UserCreate, UserUpdate, UserUpdateImg, VerifyEmail, VerifyEmailToken
 
 router = APIRouter(
     prefix="/auth",
@@ -35,20 +39,21 @@ async def get_user(user: User = Depends(get_current_user)):
     return user
 
 
-@router.post("/verify-email-request/{email}", response_model=Msg)
-async def verify_user_email_request(email: str, service: AuthService = Depends()):
-    await service.verify_email_request(email=email)
-    return {"msg": "Email verification mail sent"}
+@router.post("/verify-email-request", response_model=Token)
+async def verify_user_email_request(email: VerifyEmail, service: AuthService = Depends()):
+    result = await service.verify_email_request(email=email.email)
+    return result
 
 
 @router.post("/verify-user-email", response_model=Msg)
 async def verify_user_email(
-    token: str = Body(...),
+    token: VerifyEmailToken,
     service: AuthService = Depends(),
     db: AsyncSession = Depends(get_async_session),
     utils: AuthUtils = Depends(),
 ):
-    user = await service.validate_veify_token(token=token)
+    user = await service.validate_veify_token(token=token.token)
+    print(user)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid token")
 
@@ -57,27 +62,26 @@ async def verify_user_email(
         raise HTTPException(status_code=404, detail="User doesnt exist")
     
     await utils.verify_user_by_email(email=user.email, db=db)
-    return {"msg": "Password updated successfully"}
+    return {"msg": "Email verified successfully"}
 
 
-@router.post("/recovery-password/{email}", response_model=Msg)
+@router.post("/recovery-password", response_model=Token)
 async def recover_password(
-    email: str,
+    email: VerifyEmail,
     db: AsyncSession = Depends(get_async_session),
     service: AuthService = Depends(),
 ):
     """
     Recovery password
     """
-    await service.recover_password(email=email)
+    result =  await service.recover_password(email=email.email)
 
-    return {"msg": "Password recovery email sent"}
+    return result
 
 
-@router.post("/reset-password/", response_model=Msg)
+@router.post("/reset-password", response_model=Msg)
 async def reset_password(
-    token: str = Body(...),
-    new_password: str = Body(...),
+    token: ResetPassword,
     db: AsyncSession = Depends(get_async_session),
     service: AuthService = Depends(),
     utils: AuthUtils = Depends(),
@@ -85,17 +89,16 @@ async def reset_password(
     """
     Reset password
     """
-    user = await service.validate_recover_token(token=token)
+    user = await service.validate_recover_token(token=token.token)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid token")
 
     search_user = await utils.get_user_by_email(db=db, email=user.email)
-    print(search_user)
 
     if not search_user:
         raise HTTPException(status_code=404, detail="User doesnt exist")
 
-    hashed_password = await service.hash_password(new_password)
+    hashed_password = await service.hash_password(token.password)
     await utils.add_new_password(email=user.email, new_password=hashed_password, db=db)
     return {"msg": "Password updated successfully"}
 
@@ -113,19 +116,30 @@ async def update_user_data(
     return {"msg": "Data updated successfully"}
 
 
-@router.patch("/update-user-img", response_model=Msg)
+@router.patch("/update-user-img")
 async def update_user_data(
-    user_data: UserUpdateImg = Body(...),
+    file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     utils: AuthUtils = Depends(),
     db: AsyncSession = Depends(get_async_session),
 ):
-    print(user)
     if not await utils.is_verified(user):
         raise HTTPException(status_code=400, detail="User not verified")
+    
+    file.filename = f"{uuid.uuid4()}.jpg"
+    contents = await file.read()  # <-- Important!
 
-    result = await utils.update_user_image(email=user.email, db=db, user=user_data)
+    upload_dir = os.path.join(os.getcwd(), user.username)
+    if not os.path.exists(user.username):
+        os.makedirs(user.username)
+        
+    with open(f"{upload_dir}/{file.filename}", "wb") as f:
+        print(upload_dir)
+        f.write(contents)
 
-    if not result:
-        raise HTTPException(status_code=404, detail="Invalid Data")
-    return {"msg": "Data updated successfully"}
+    return {"filename": file.filename}
+    # result = await utils.update_user_image(email=user.email, db=db, user=user_data)
+
+    # if not result:
+    #     raise HTTPException(status_code=404, detail="Invalid Data")
+    # return {"msg": "Data updated successfully"}

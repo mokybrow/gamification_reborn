@@ -98,8 +98,8 @@ class AuthService:
             settings.jwt_secret,
             algorithm=settings.jwt_algoritm,
         )
-        print(token)
         return Token(access_token=token)
+
 
     @classmethod
     async def create_verify_email_token(cls, user: UserCreate) -> Token:
@@ -119,8 +119,6 @@ class AuthService:
             algorithm=settings.jwt_algoritm,
         )
 
-        print(token)
-
         return Token(access_token=token)
 
     def __init__(self, db: AsyncSession = Depends(get_async_session)):
@@ -132,7 +130,6 @@ class AuthService:
             "email": user_data.email,
             "username": user_data.username,
             "name": user_data.name,
-            "surname": user_data.surname,
             "img": user_data.img,
             "sex": user_data.sex,
             "birthdate": user_data.birthdate,
@@ -140,6 +137,7 @@ class AuthService:
             "is_superuser": user_data.is_superuser,
             "is_writer": user_data.is_writer,
             "hashed_password": await self.hash_password(user_data.password),
+            "registr_at": user_data.registr_at
         }
         if  await utils.get_user_by_email(db=self.db, email=user_data.email):
             raise HTTPException(status_code=400, detail="User with this email exist")
@@ -155,7 +153,7 @@ class AuthService:
     async def authenticate_user(self, username: str, password: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not valid creditials",
+            detail="Could not valid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -173,6 +171,7 @@ class AuthService:
 
         return await self.create_access_token(user)
 
+
     async def verify_email_request(self, email: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -182,6 +181,11 @@ class AuthService:
         user = await self.db.execute(
             select(user_table).filter(user_table.c.email == email)
         )
+        user_valid = await self.db.execute(
+            select(user_table).filter(user_table.c.email == email, user_table.c.is_verified == True)
+        )
+        if user_valid.all():
+            return {"msg": "User already verified"}
         user = user.all()
         for row in user:
             user = row._mapping
@@ -189,6 +193,7 @@ class AuthService:
             raise exception
 
         return await self.create_verify_email_token(user)
+
 
     async def validate_veify_token(self, token: str) -> User:
         exception = HTTPException(
