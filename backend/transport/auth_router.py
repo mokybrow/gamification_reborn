@@ -1,8 +1,10 @@
 import os
+from random import randint
+import shutil
 from typing import Annotated, Any
 import uuid
 
-from fastapi import APIRouter, Body, Depends, FastAPI, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,9 +13,10 @@ from backend.authentication.auth import AuthService, get_current_user
 from backend.authentication.utils import AuthUtils
 from backend.database import get_async_session
 from backend.models.msg import Msg, VerifyToken
-from backend.services.cover_uploader import save_upload_cover
+from backend.services.user_img_upload import save_upload_cover
+from backend.services.img_resize import resize_image
 
-from ..models.auth import ResetPassword, Token, User, UserCreate, UserUpdate, UserUpdateImg, VerifyEmail, VerifyEmailToken
+from ..models.auth_models import ResetPassword, Token, User, UserCreate, UserUpdate, UserUpdateImg, VerifyEmail, VerifyEmailToken
 
 router = APIRouter(
     prefix="/auth",
@@ -118,6 +121,7 @@ async def update_user_data(
 
 @router.patch("/update-user-img")
 async def update_user_data(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     utils: AuthUtils = Depends(),
@@ -128,18 +132,8 @@ async def update_user_data(
     
     file.filename = f"{uuid.uuid4()}.jpg"
     contents = await file.read()  # <-- Important!
+    upload_dir = save_upload_cover(contents=contents, filename=file.filename, username=user.username)
 
-    upload_dir = os.path.join(os.getcwd(), user.username)
-    if not os.path.exists(user.username):
-        os.makedirs(user.username)
-        
-    with open(f"{upload_dir}/{file.filename}", "wb") as f:
-        print(upload_dir)
-        f.write(contents)
-
+    background_tasks.add_task(resize_image, filename=file.filename, path_file=upload_dir, db=db, user_id=user.user_id)
     return {"filename": file.filename}
-    # result = await utils.update_user_image(email=user.email, db=db, user=user_data)
 
-    # if not result:
-    #     raise HTTPException(status_code=404, detail="Invalid Data")
-    # return {"msg": "Data updated successfully"}

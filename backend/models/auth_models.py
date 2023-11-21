@@ -7,14 +7,15 @@ from pydantic import UUID4, BaseModel, EmailStr
 class BaseUser(BaseModel):
     email: EmailStr
     username: str
-    name: Optional[str] = None
-    img: Optional[str] = None
-    sex: Optional[str] = None
+    name: Optional[str]
+    bio: Optional[str] = None
+    profile_picture: Optional[str] = None
+    gender: Optional[str] = None
     birthdate: Optional[datetime.date] = None
     is_verified: Optional[bool] = False
     is_superuser: Optional[bool] = False
     is_writer: Optional[bool] = False
-    registr_at: Optional[datetime.datetime] = None
+    registration_date: Optional[datetime.datetime] = None
 
 
 class UserCreate(BaseUser):
@@ -33,7 +34,7 @@ class UserUpdateImg(BaseModel):
 
 
 class User(BaseUser):
-    id: UUID4
+    user_id: UUID4
 
     class Config:
         from_attributes = True
@@ -42,7 +43,7 @@ class User(BaseUser):
 
 class Token(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = "Bearer"
 
 
 class VerifyEmail(BaseModel):

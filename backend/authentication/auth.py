@@ -13,8 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .utils import AuthUtils
 
 from backend.database import get_async_session
-from backend.models.auth import Token, User, UserCreate
-from backend.models.database import user_table
+from backend.models.auth_models import Token, User, UserCreate
+from backend.models.db_tables import user_table
 from backend.settings import get_settings
 
 settings = get_settings()
@@ -33,7 +33,7 @@ class AuthService:
 
     @classmethod
     async def hash_password(cls, password: str) -> str:
-        return bcrypt.hash(password)
+        return bcrypt.using(rounds=15).hash(password)
 
     @classmethod
     async def validate_token(cls, token: str) -> User:
@@ -70,7 +70,7 @@ class AuthService:
             "iat": now,
             "nbf": now,
             "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
-            "sub": str(user_data.id),
+            "sub": str(user_data.user_id),
             "aud": settings.access_audience,
             "user": user_data.model_dump_json(),
         }
@@ -89,7 +89,7 @@ class AuthService:
             "iat": now,
             "nbf": now,
             "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
-            "sub": str(user_data.id),
+            "sub": str(user_data.user_id),
             "aud": settings.recover_audience,
             "user": user_data.model_dump_json(),
         }
@@ -109,7 +109,7 @@ class AuthService:
             "iat": now,
             "nbf": now,
             "exp": now + datetime.timedelta(seconds=settings.jwt_expiration),
-            "sub": str(user_data.id),
+            "sub": str(user_data.user_id),
             "aud": settings.verification_audience,
             "user": user_data.model_dump_json(),
         }
@@ -126,18 +126,19 @@ class AuthService:
 
     async def registration_user(self, user_data: UserCreate, utils = AuthUtils) -> Token:
         user = {
-            "id": uuid.uuid4(),
+            "user_id": uuid.uuid4(),
             "email": user_data.email,
             "username": user_data.username,
             "name": user_data.name,
-            "img": user_data.img,
-            "sex": user_data.sex,
+            "bio": user_data.bio,
+            "profile_picture": user_data.profile_picture,
+            "gender": user_data.gender,
             "birthdate": user_data.birthdate,
             "is_verified": user_data.is_verified,
             "is_superuser": user_data.is_superuser,
             "is_writer": user_data.is_writer,
             "hashed_password": await self.hash_password(user_data.password),
-            "registr_at": user_data.registr_at
+            "registration_date": user_data.registration_date
         }
         if  await utils.get_user_by_email(db=self.db, email=user_data.email):
             raise HTTPException(status_code=400, detail="User with this email exist")
