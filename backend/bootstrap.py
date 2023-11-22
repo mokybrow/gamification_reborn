@@ -2,7 +2,8 @@ from functools import lru_cache
 
 from fastapi import APIRouter, FastAPI
 
-from backend.transport.auth_router import router as test_router
+from backend.transport.auth_router import router as auth_router
+from backend.transport.user_router import router as user_router
 
 from .settings import get_settings
 
@@ -10,7 +11,8 @@ from .settings import get_settings
 def _setup_api_routers(
     api: APIRouter,
 ) -> None:
-    api.include_router(test_router)
+    api.include_router(auth_router)
+    api.include_router(user_router)
 
 
 @lru_cache

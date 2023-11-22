@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.authentication.auth import AuthService, get_current_user
 from backend.authentication.utils import AuthUtils
 from backend.database import get_async_session
-from backend.models.msg import Msg, VerifyToken
+from backend.models.msg_models import Msg, VerifyToken
 from backend.services.user_img_upload import save_upload_cover
 from backend.services.img_resize import resize_image
 
@@ -56,7 +56,6 @@ async def verify_user_email(
     utils: AuthUtils = Depends(),
 ):
     user = await service.validate_veify_token(token=token.token)
-    print(user)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid token")
 
@@ -119,7 +118,7 @@ async def update_user_data(
     return {"msg": "Data updated successfully"}
 
 
-@router.patch("/update-user-img")
+@router.patch("/update-user-img", description='Обновление фото профиля, в базу сохраняется 200х200 картинка')
 async def update_user_data(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),

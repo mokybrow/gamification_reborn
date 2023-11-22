@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.models.auth_models import (Token, User, UserCreate, UserUpdate,
                                  UserUpdateImg)
-from backend.models.db_tables import user_table
+from backend.models.database_scheme import user_table
 
 
 class AuthUtils:

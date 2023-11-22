@@ -14,7 +14,7 @@ from .utils import AuthUtils
 
 from backend.database import get_async_session
 from backend.models.auth_models import Token, User, UserCreate
-from backend.models.db_tables import user_table
+from backend.models.database_scheme import user_table
 from backend.settings import get_settings
 
 settings = get_settings()
