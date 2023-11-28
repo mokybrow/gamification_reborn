@@ -3,7 +3,7 @@ import shutil
 
 from fastapi import BackgroundTasks
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, FastAPI, File, HTTPException, UploadFile, status
-from backend.database import get_async_session
+from dudesplay_api.database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

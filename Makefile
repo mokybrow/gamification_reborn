@@ -1,4 +1,4 @@
-SOURCE_DIR_API=backend
+SOURCE_DIR_API=dudesplay_api
 TESTS_DIR=tests
 
 

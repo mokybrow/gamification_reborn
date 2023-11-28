@@ -4,9 +4,9 @@ from fastapi import Depends
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.models.auth_models import (Token, User, UserCreate, UserUpdate,
+from dudesplay_api.models.auth_models import (Token, User, UserCreate, UserUpdate,
                                  UserUpdateImg)
-from backend.models.database_scheme import user_table
+from dudesplay_api.models.database_scheme import user_table
 
 
 class AuthUtils:

@@ -12,10 +12,10 @@ from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from .utils import AuthUtils
 
-from backend.database import get_async_session
-from backend.models.auth_models import Token, User, UserCreate
-from backend.models.database_scheme import user_table
-from backend.settings import get_settings
+from dudesplay_api.database import get_async_session
+from dudesplay_api.models.auth_models import Token, User, UserCreate
+from dudesplay_api.models.database_scheme import user_table
+from dudesplay_api.settings import get_settings
 
 settings = get_settings()
 

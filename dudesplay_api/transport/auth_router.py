@@ -9,12 +9,12 @@ from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.authentication.auth import AuthService, get_current_user
-from backend.authentication.utils import AuthUtils
-from backend.database import get_async_session
-from backend.models.msg_models import Msg, VerifyToken
-from backend.services.user_img_upload import save_upload_cover
-from backend.services.img_resize import resize_image
+from dudesplay_api.authentication.auth import AuthService, get_current_user
+from dudesplay_api.authentication.utils import AuthUtils
+from dudesplay_api.database import get_async_session
+from dudesplay_api.models.msg_models import Msg, VerifyToken
+from dudesplay_api.services.user_img_upload import save_upload_cover
+from dudesplay_api.services.img_resize import resize_image
 
 from ..models.auth_models import ResetPassword, Token, User, UserCreate, UserUpdate, UserUpdateImg, VerifyEmail, VerifyEmailToken
 
