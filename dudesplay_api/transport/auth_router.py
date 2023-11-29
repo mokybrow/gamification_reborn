@@ -118,21 +118,5 @@ async def update_user_data(
     return {"msg": "Data updated successfully"}
 
 
-@router.patch("/update-user-img", description='Обновление фото профиля, в базу сохраняется 200х200 картинка')
-async def update_user_data(
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    user: User = Depends(get_current_user),
-    utils: AuthUtils = Depends(),
-    db: AsyncSession = Depends(get_async_session),
-):
-    if not await utils.is_verified(user):
-        raise HTTPException(status_code=400, detail="User not verified")
-    
-    file.filename = f"{uuid.uuid4()}.jpg"
-    contents = await file.read()  # <-- Important!
-    upload_dir = save_upload_cover(contents=contents, filename=file.filename, username=user.username)
 
-    background_tasks.add_task(resize_image, filename=file.filename, path_file=upload_dir, db=db, user_id=user.user_id)
-    return {"filename": file.filename}
 
