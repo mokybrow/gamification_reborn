@@ -1,21 +1,6 @@
 import os
 import shutil
 
-from fastapi import (
-    APIRouter,
-    BackgroundTasks,
-    Body,
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    UploadFile,
-    status,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from dudesplay_api.database import get_async_session
-
 
 def save_upload_cover(contents, filename: str, username: str) -> str:
     upload_dir = os.path.join(os.getcwd(), f'uploads/{username}')

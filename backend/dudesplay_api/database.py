@@ -1,7 +1,5 @@
-import os
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
-from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from dudesplay_api.settings import get_settings

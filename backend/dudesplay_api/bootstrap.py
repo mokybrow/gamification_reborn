@@ -22,6 +22,6 @@ def make_app() -> FastAPI:
         title=settings.project_name,
         # debug=settings.debug,
     )
-    _setup_api_routers(app.router)  # noqa
+    _setup_api_routers(app.router)
 
     return app

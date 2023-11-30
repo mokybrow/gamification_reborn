@@ -1,13 +1,9 @@
-import json
 
-from fastapi import Depends
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dudesplay_api.models.auth_models import (
-    Token,
     User,
-    UserCreate,
     UserUpdate,
     UserUpdateImg,
 )
@@ -18,7 +14,7 @@ class AuthUtils:
     @staticmethod
     async def get_user_by_email(email: str, db: AsyncSession):
         query = select(user_table).where(
-            func.lower(user_table.c.email) == email.lower()
+            func.lower(user_table.c.email) == email.lower(),
         )
         result = await db.execute(query)
         return result.all()
@@ -26,7 +22,7 @@ class AuthUtils:
     @staticmethod
     async def get_user_by_username(username: str, db: AsyncSession):
         query = select(user_table).where(
-            func.lower(user_table.c.username) == username.lower()
+            func.lower(user_table.c.username) == username.lower(),
         )
         result = await db.execute(query)
         return result.all()
@@ -69,7 +65,7 @@ class AuthUtils:
         return True
 
     async def update_user_image(
-        self, email: str, user: UserUpdateImg, db: AsyncSession
+        self, email: str, user: UserUpdateImg, db: AsyncSession,
     ):
         stmt = (
             update(user_table)

@@ -1,9 +1,7 @@
-import datetime
 import uuid
 
 from sqlalchemy import (
     ARRAY,
-    CHAR,
     UUID,
     VARCHAR,
     Boolean,
@@ -256,11 +254,11 @@ walls = Table(
     'walls',
     metadata,
     Column(
-        'wall_id', UUID, primary_key=True, default=uuid.uuid4()
+        'wall_id', UUID, primary_key=True, default=uuid.uuid4(),
     ),  # ID профиля или группы, в будущем
     Column('type_id', UUID, ForeignKey('wall_types.type_id', ondelete='RESTRICT')),
     Column(
-        'item_id', UUID, nullable=False
+        'item_id', UUID, nullable=False,
     ),  # ID Элемента, котороый принадлежит этой странице
 )
 

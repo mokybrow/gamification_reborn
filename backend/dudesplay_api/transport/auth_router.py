@@ -1,29 +1,18 @@
-import os
-import shutil
-import uuid
-from random import randint
 from typing import Annotated, Any
 
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
     Body,
     Depends,
-    FastAPI,
-    File,
     HTTPException,
-    UploadFile,
-    status,
 )
-from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dudesplay_api.authentication.auth import AuthService, get_current_user
 from dudesplay_api.authentication.utils import AuthUtils
 from dudesplay_api.database import get_async_session
-from dudesplay_api.models.msg_models import Msg, VerifyToken
-
+from dudesplay_api.models.msg_models import Msg
 
 from ..models.auth_models import (
     ResetPassword,
@@ -31,7 +20,6 @@ from ..models.auth_models import (
     User,
     UserCreate,
     UserUpdate,
-    UserUpdateImg,
     VerifyEmail,
     VerifyEmailToken,
 )
@@ -62,7 +50,7 @@ async def get_user(user: User = Depends(get_current_user)):
 
 @router.post('/verify-email-request', response_model=Token)
 async def verify_user_email_request(
-    email: VerifyEmail, service: AuthService = Depends()
+    email: VerifyEmail, service: AuthService = Depends(),
 ):
     result = await service.verify_email_request(email=email.email)
     return result

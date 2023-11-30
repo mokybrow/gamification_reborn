@@ -1,7 +1,6 @@
 import datetime
 import json
 import uuid
-from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -159,7 +158,7 @@ class AuthService:
         )
 
         user = await self.db.execute(
-            select(user_table).filter(user_table.c.username == username)
+            select(user_table).filter(user_table.c.username == username),
         )
         user = user.all()
         for row in user:
@@ -179,12 +178,12 @@ class AuthService:
             headers={'WWW-Authenticate': 'Bearer'},
         )
         user = await self.db.execute(
-            select(user_table).filter(user_table.c.email == email)
+            select(user_table).filter(user_table.c.email == email),
         )
         user_valid = await self.db.execute(
             select(user_table).filter(
-                user_table.c.email == email, user_table.c.is_verified == True
-            )
+                user_table.c.email == email, user_table.c.is_verified is True,
+            ),
         )
         if user_valid.all():
             return {'msg': 'User already verified'}
@@ -230,7 +229,7 @@ class AuthService:
             headers={'WWW-Authenticate': 'Bearer'},
         )
         user = await self.db.execute(
-            select(user_table).filter(user_table.c.email == email)
+            select(user_table).filter(user_table.c.email == email),
         )
         user = user.all()
         for row in user:

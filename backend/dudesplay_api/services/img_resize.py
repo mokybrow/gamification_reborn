@@ -1,6 +1,6 @@
-from PIL import ExifTags, Image, ImageOps
+from PIL import Image, ImageOps
 from pydantic import UUID4
-from sqlalchemy import insert, update
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.database_scheme import user_table
