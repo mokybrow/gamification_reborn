@@ -40,6 +40,27 @@ exclude = '''
 )
 '''
 
+[tool.mypy]
+python_version = 3.11
+plugins = [
+"pydantic.mypy"
+]
+ignore_missing_imports = true
+follow_imports = "silent"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+exclude = [
+'prometheus_data\.py',
+'.venv/',
+'venv/',
+]
+
+
 [tool.isort]
 line_length = 120
 force_grid_wrap = 0
