@@ -77,7 +77,176 @@ game_table = Table(
 )
 Index('my_index', game_table.c.text_tsv, postgresql_using='gin')
 
+#######
 
+platforms = Table(
+    'platforms',
+    metadata,
+    Column(
+        'platform_id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'parent_platform',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'platform_name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'platform_slug',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'platform_name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+
+)
+
+game_platforms = Table(
+    'game_platforms',
+    metadata,
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.game_id', ondelete='CASCADE'),
+    ),
+    Column(
+        'platform_id',
+        UUID,
+        ForeignKey('platforms.platform_id', ondelete='CASCADE'),
+    ),
+)
+
+
+g_tags = Table(
+    'g_tags',
+    metadata,
+    Column(
+        'g_tag_id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+
+)
+
+game_tags = Table(
+    'game_tags',
+    metadata,
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.game_id', ondelete='CASCADE'),
+    ),
+    Column(
+        'g_tag_id',
+        UUID,
+        ForeignKey('g_tags.g_tag_id', ondelete='CASCADE'),
+    ),
+)
+
+
+genres = Table(
+    'genres',
+    metadata,
+    Column(
+        'genre_id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+
+)
+
+game_genres = Table(
+    'game_genres',
+    metadata,
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.game_id', ondelete='CASCADE'),
+    ),
+    Column(
+        'genre_id',
+        UUID,
+        ForeignKey('genres.genre_id', ondelete='CASCADE'),
+    ),
+)
+
+
+age_ratings = Table(
+    'age_ratings',
+    metadata,
+    Column(
+        'age_rating_id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+
+)
+
+age_rating_games = Table(
+    'age_rating_games',
+    metadata,
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.game_id', ondelete='CASCADE'),
+    ),
+    Column(
+        'age_rating_id',
+        UUID,
+        ForeignKey('age_ratings.age_rating_id', ondelete='CASCADE'),
+    ),
+)
+
+#######
 game_reviews = Table(
     'game_reviews',
     metadata,
@@ -229,6 +398,7 @@ user_games = Table(
         default=uuid.uuid4(),
     ),
     Column('like_count', Integer, nullable=True),
+    Column('user_date', DateTime(timezone=True)),
     Column('created', DateTime(timezone=True)),
 )
 
@@ -347,6 +517,8 @@ comments = Table(
         default=uuid.uuid4(),
     ),
     Column('like_count', Integer, nullable=True),
+    Column('created', DateTime(timezone=True)),
+
 )
 
 like_log = Table(

@@ -12,7 +12,7 @@ class Settings(
 
     jwt_secret: str
     jwt_algoritm: str
-    jwt_expiration: int = 3600
+    jwt_expiration: int = 604800
     jwt_reset_jwt_expiration: int = 3600
 
     # mail_username: str
