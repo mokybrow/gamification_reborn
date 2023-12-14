@@ -6,7 +6,7 @@ from .bootstrap import make_app  # noqa
 def main() -> None:
     run(
         app='dudesplay_api.main:make_app',
-        host='0.0.0.0',
+        host='127.0.0.1',
         port=8000,
         factory=True,
         workers=1,

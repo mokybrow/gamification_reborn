@@ -16,6 +16,7 @@ from sqlalchemy import (
     MetaData,
     String,
     Table,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.declarative import declarative_base
@@ -87,12 +88,6 @@ platforms = Table(
         UUID,
         primary_key=True
     ),
-    Column(
-        'parent_platform',
-        String(100),
-        nullable=False,
-        unique=True
-    ),
         Column(
         'platform_name',
         String(100),
@@ -127,6 +122,7 @@ game_platforms = Table(
         UUID,
         ForeignKey('platforms.platform_id', ondelete='CASCADE'),
     ),
+    UniqueConstraint('game_id', 'platform_id', name='uix_1')
 )
 
 
@@ -205,6 +201,7 @@ game_genres = Table(
         UUID,
         ForeignKey('genres.genre_id', ondelete='CASCADE'),
     ),
+    UniqueConstraint('game_id', 'genre_id', name='uix_2')
 )
 
 
