@@ -126,45 +126,6 @@ game_platforms = Table(
 )
 
 
-g_tags = Table(
-    'g_tags',
-    metadata,
-    Column(
-        'g_tag_id',
-        UUID,
-        primary_key=True
-    ),
-    Column(
-        'name',
-        String(100),
-        nullable=False,
-        unique=True
-    ),
-        Column(
-        'name_ru',
-        String(100),
-        nullable=True
-    ),
-    Column('code', Integer, nullable=True),
-
-)
-
-game_tags = Table(
-    'game_tags',
-    metadata,
-    Column(
-        'game_id',
-        UUID,
-        ForeignKey('games.game_id', ondelete='CASCADE'),
-    ),
-    Column(
-        'g_tag_id',
-        UUID,
-        ForeignKey('g_tags.g_tag_id', ondelete='CASCADE'),
-    ),
-)
-
-
 genres = Table(
     'genres',
     metadata,
