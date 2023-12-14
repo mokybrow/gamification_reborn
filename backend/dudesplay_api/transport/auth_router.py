@@ -30,12 +30,12 @@ router = APIRouter(
 )
 
 
-@router.post('/sign-up', response_model=Token)
+@router.post('/registration', response_model=Token)
 async def sign_up(user_data: UserCreate, service: AuthService = Depends()):
     return await service.registration_user(user_data)
 
 
-@router.post('/sign-in', response_model=Token)
+@router.post('/login', response_model=Token)
 async def sign_in(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     service: AuthService = Depends(),
@@ -48,7 +48,7 @@ async def get_user(user: User = Depends(get_current_user)):
     return user
 
 
-@router.post('/verify-email-request', response_model=Token)
+@router.post('/verify/email/request', response_model=Token)
 async def verify_user_email_request(
     email: VerifyEmail, service: AuthService = Depends(),
 ):
@@ -56,7 +56,7 @@ async def verify_user_email_request(
     return result
 
 
-@router.post('/verify-user-email', response_model=Msg)
+@router.post('/verify/user/email', response_model=Msg)
 async def verify_user_email(
     token: VerifyEmailToken,
     service: AuthService = Depends(),
@@ -75,7 +75,7 @@ async def verify_user_email(
     return {'msg': 'Email verified successfully'}
 
 
-@router.post('/recovery-password', response_model=Token)
+@router.post('/password/recovery', response_model=Token)
 async def recover_password(
     email: VerifyEmail,
     db: AsyncSession = Depends(get_async_session),
@@ -89,7 +89,7 @@ async def recover_password(
     return result
 
 
-@router.post('/reset-password', response_model=Msg)
+@router.post('/password/reset', response_model=Msg)
 async def reset_password(
     token: ResetPassword,
     db: AsyncSession = Depends(get_async_session),
@@ -113,7 +113,7 @@ async def reset_password(
     return {'msg': 'Password updated successfully'}
 
 
-@router.patch('/update-user', response_model=Msg)
+@router.patch('/update/user', response_model=Msg)
 async def update_user_data(
     user_data: UserUpdate = Body(...),
     user: User = Depends(get_current_user),

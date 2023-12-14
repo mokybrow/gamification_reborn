@@ -4,7 +4,7 @@ from pydantic import UUID4
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.database_scheme import game_table, platforms, g_tags, genres, age_rating_games, game_tags, game_genres, game_platforms
+from ..models.database_scheme import game_table, platforms, genres, age_rating_games, game_genres, game_platforms
 from deep_translator import GoogleTranslator, MyMemoryTranslator
 
 
@@ -61,7 +61,7 @@ async def normilize(db: AsyncSession):
                     game_genre_id = select(genres).where(genres.c.name == game_genre)
                     game_genre_id = await db.execute(game_genre_id)
                     game_genre_id = game_genre_id.all()
-           
+
                     check_pair2 = select(game_genres).filter(game_genres.c.game_id == result[0][0], game_genres.c.genre_id == game_genre_id[0][0])
                     check_pair2 = await db.execute(check_pair2)
                     check_pair2 = check_pair2.all()
@@ -73,7 +73,7 @@ async def normilize(db: AsyncSession):
                                 )
 
                         await db.execute(stmt)
-                        await db.commit()               
+                        await db.commit()
             # print(result[0][11])
             # if result[0][11]:
             #     for tag in result[0][11]:
