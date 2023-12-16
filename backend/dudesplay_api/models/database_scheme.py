@@ -64,16 +64,10 @@ game_table = Table(
     Column('slug', String, nullable=False, unique=True, index=True),
     Column('release', DateTime, nullable=True),
     Column('playtime', Integer, nullable=True, unique=False),
-    Column('platform_slug', ARRAY(String), nullable=True, unique=False),
-    Column('platforms', ARRAY(String), nullable=True, unique=False),
-    Column('parent_platform', ARRAY(String), nullable=True, unique=False),
-    Column('genre', ARRAY(String), nullable=True, unique=False),
-    Column('tags', ARRAY(String), nullable=True, unique=False),
     Column('avg_rate', Float, nullable=True, unique=False),
     Column('completed_count', Integer, nullable=True, unique=False),
     Column('wishlist_count', Integer, nullable=True, unique=False),
     Column('favorite_count', Integer, nullable=True, unique=False),
-    Column('esrb_rating', String, nullable=True, unique=False),
     Column('text_tsv', TSVECTOR, nullable=True, unique=False),
 )
 Index('my_index', game_table.c.text_tsv, postgresql_using='gin')
