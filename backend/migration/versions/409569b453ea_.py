@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 10882b207c07
+Revision ID: 409569b453ea
 Revises:
-Create Date: 2023-12-14 22:08:52.450681
+Create Date: 2023-12-18 22:18:05.763109
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '10882b207c07'
+revision: str = '409569b453ea'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,14 +34,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('age_rating_id'),
     sa.UniqueConstraint('name')
     )
-    op.create_table('g_tags',
-    sa.Column('g_tag_id', sa.UUID(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('name_ru', sa.String(length=100), nullable=True),
-    sa.Column('code', sa.Integer(), nullable=True),
-    sa.PrimaryKeyConstraint('g_tag_id'),
-    sa.UniqueConstraint('name')
-    )
     op.create_table('games',
     sa.Column('game_id', sa.UUID(), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
@@ -50,16 +42,10 @@ def upgrade() -> None:
     sa.Column('slug', sa.String(), nullable=False),
     sa.Column('release', sa.DateTime(), nullable=True),
     sa.Column('playtime', sa.Integer(), nullable=True),
-    sa.Column('platform_slug', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('platforms', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('parent_platform', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('genre', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('tags', sa.ARRAY(sa.String()), nullable=True),
     sa.Column('avg_rate', sa.Float(), nullable=True),
     sa.Column('completed_count', sa.Integer(), nullable=True),
     sa.Column('wishlist_count', sa.Integer(), nullable=True),
     sa.Column('favorite_count', sa.Integer(), nullable=True),
-    sa.Column('esrb_rating', sa.String(), nullable=True),
     sa.Column('text_tsv', postgresql.TSVECTOR(), nullable=True),
     sa.PrimaryKeyConstraint('game_id')
     )
@@ -79,6 +65,13 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('code', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('type_id')
+    )
+    op.create_table('mailing_type',
+    sa.Column('mailing_id', sa.UUID(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('code', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('mailing_id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('platforms',
     sa.Column('platform_id', sa.UUID(), nullable=False),
@@ -101,10 +94,9 @@ def upgrade() -> None:
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('hashed_password', sa.String(), nullable=False),
-    sa.Column('name', sa.VARCHAR(length=255), nullable=False),
-    sa.Column('bio', sa.VARCHAR(length=255), nullable=True),
-    sa.Column('profile_picture', sa.String(), nullable=True),
-    sa.Column('gender', sa.VARCHAR(length=255), nullable=True),
+    sa.Column('name', sa.String(length=255), nullable=False),
+    sa.Column('bio', sa.String(length=255), nullable=True),
+    sa.Column('gender', sa.String(length=255), nullable=True),
     sa.Column('birthdate', sa.Date(), nullable=True),
     sa.Column('is_verified', sa.Boolean(), nullable=True),
     sa.Column('is_superuser', sa.Boolean(), nullable=True),
@@ -149,6 +141,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('comment_id')
     )
+    op.create_table('deletion_requests',
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('request_day', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('delete_day', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('user_id')
+    )
     op.create_table('friends',
     sa.Column('follower_id', sa.UUID(), nullable=True),
     sa.Column('user_id', sa.UUID(), nullable=True),
@@ -181,21 +180,36 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('review_id')
     )
-    op.create_table('game_tags',
-    sa.Column('game_id', sa.UUID(), nullable=True),
-    sa.Column('g_tag_id', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['g_tag_id'], ['g_tags.g_tag_id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['game_id'], ['games.game_id'], ondelete='CASCADE')
-    )
     op.create_table('like_log',
     sa.Column('like_id', sa.UUID(), nullable=False),
-    sa.Column('post_id', sa.UUID(), nullable=True),
+    sa.Column('type_id', sa.UUID(), nullable=True),
     sa.Column('item_id', sa.UUID(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.Column('created', sa.DateTime(timezone=True), nullable=True),
-    sa.ForeignKeyConstraint(['post_id'], ['like_types.type_id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['type_id'], ['like_types.type_id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('like_id')
+    )
+    op.create_table('profile_pictures',
+    sa.Column('picture_id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=True),
+    sa.Column('picture_path', sa.String(), nullable=False),
+    sa.Column('og_picture_path', sa.String(), nullable=False),
+    sa.Column('created', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('picture_id')
+    )
+    op.create_table('user_favorite',
+    sa.Column('favorite_id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=True),
+    sa.Column('game_id', sa.UUID(), nullable=True),
+    sa.Column('activity_id', sa.UUID(), nullable=True),
+    sa.Column('like_count', sa.Integer(), nullable=True),
+    sa.Column('created', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['activity_id'], ['activity_types.activity_id'], ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['game_id'], ['games.game_id'], ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('favorite_id')
     )
     op.create_table('user_games',
     sa.Column('action_id', sa.UUID(), nullable=False),
@@ -221,21 +235,15 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('list_id')
     )
-    op.create_table('user_notifications',
+    op.create_table('user_mailing',
     sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('mailing_id', sa.UUID(), nullable=False),
     sa.Column('general', sa.Boolean(), nullable=True),
     sa.Column('updates', sa.Boolean(), nullable=True),
     sa.Column('happy_birthday', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['mailing_id'], ['mailing_type.mailing_id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('user_id')
-    )
-    op.create_table('user_settings',
-    sa.Column('user_id', sa.UUID(), nullable=False),
-    sa.Column('app_theme', sa.Integer(), nullable=False),
-    sa.Column('delete_request', sa.Boolean(), nullable=True),
-    sa.Column('delete_day', sa.DateTime(timezone=True), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('user_id')
+    sa.PrimaryKeyConstraint('user_id', 'mailing_id')
     )
     op.create_table('walls',
     sa.Column('wall_id', sa.UUID(), nullable=False),
@@ -270,6 +278,7 @@ def upgrade() -> None:
     sa.Column('picture_id', sa.UUID(), nullable=False),
     sa.Column('post_id', sa.UUID(), nullable=True),
     sa.Column('picture_path', sa.String(), nullable=False),
+    sa.Column('og_picture_path', sa.String(), nullable=True),
     sa.Column('created', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['post_id'], ['posts.post_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('picture_id')
@@ -290,16 +299,17 @@ def downgrade() -> None:
     op.drop_table('posts')
     op.drop_table('list_games')
     op.drop_table('walls')
-    op.drop_table('user_settings')
-    op.drop_table('user_notifications')
+    op.drop_table('user_mailing')
     op.drop_table('user_lists')
     op.drop_table('user_games')
+    op.drop_table('user_favorite')
+    op.drop_table('profile_pictures')
     op.drop_table('like_log')
-    op.drop_table('game_tags')
     op.drop_table('game_reviews')
     op.drop_table('game_platforms')
     op.drop_table('game_genres')
     op.drop_table('friends')
+    op.drop_table('deletion_requests')
     op.drop_table('comments')
     op.drop_table('ban_list')
     op.drop_table('age_rating_games')
@@ -308,13 +318,13 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('tags')
     op.drop_table('platforms')
+    op.drop_table('mailing_type')
     op.drop_table('like_types')
     op.drop_table('genres')
     op.drop_index('my_index', table_name='games', postgresql_using='gin')
     op.drop_index(op.f('ix_games_slug'), table_name='games')
     op.drop_index(op.f('ix_games_game_id'), table_name='games')
     op.drop_table('games')
-    op.drop_table('g_tags')
     op.drop_table('age_ratings')
     op.drop_table('activity_types')
     # ### end Alembic commands ###
