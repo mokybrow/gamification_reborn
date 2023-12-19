@@ -7,7 +7,7 @@ from dudesplay_api.models.auth_models import (
     UserUpdate,
     UserUpdateImg,
 )
-from dudesplay_api.models.database_scheme import user_table
+from dudesplay_api.schemas.database_scheme import user_table
 
 
 class AuthUtils:

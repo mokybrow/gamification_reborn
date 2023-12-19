@@ -9,12 +9,12 @@ class BaseUser(BaseModel):
     username: str
     name: Optional[str]
     bio: Optional[str] = None
-    profile_picture: Optional[str] = None
     gender: Optional[str] = None
-    birthdate: Optional[datetime.date] = None
+    birthdate: datetime.date = None
     is_verified: Optional[bool] = False
     is_superuser: Optional[bool] = False
     is_writer: Optional[bool] = False
+    official_person: Optional[bool] = False
     registration_date: Optional[datetime.datetime] = None
 
 
@@ -34,7 +34,7 @@ class UserUpdateImg(BaseModel):
 
 
 class User(BaseUser):
-    user_id: UUID4
+    id: UUID4
 
     class Config:
         from_attributes = True

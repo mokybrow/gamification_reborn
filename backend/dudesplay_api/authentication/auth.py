@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dudesplay_api.database import get_async_session
 from dudesplay_api.models.auth_models import Token, User, UserCreate
-from dudesplay_api.models.database_scheme import user_table
+from dudesplay_api.schemas.database_scheme import user_table
 from dudesplay_api.settings import get_settings
 
 from .utils import AuthUtils
@@ -70,7 +70,7 @@ class AuthService:
             'iat': now,
             'nbf': now,
             'exp': now + datetime.timedelta(seconds=settings.jwt_expiration),
-            'sub': str(user_data.user_id),
+            'sub': str(user_data.id),
             'aud': settings.access_audience,
             'user': user_data.model_dump_json(),
         }
@@ -89,7 +89,7 @@ class AuthService:
             'iat': now,
             'nbf': now,
             'exp': now + datetime.timedelta(seconds=settings.jwt_expiration),
-            'sub': str(user_data.user_id),
+            'sub': str(user_data.id),
             'aud': settings.recover_audience,
             'user': user_data.model_dump_json(),
         }
@@ -108,7 +108,7 @@ class AuthService:
             'iat': now,
             'nbf': now,
             'exp': now + datetime.timedelta(seconds=settings.jwt_expiration),
-            'sub': str(user_data.user_id),
+            'sub': str(user_data.id),
             'aud': settings.verification_audience,
             'user': user_data.model_dump_json(),
         }
@@ -125,19 +125,20 @@ class AuthService:
 
     async def registration_user(self, user_data: UserCreate, utils=AuthUtils) -> Token:
         user = {
-            'user_id': uuid.uuid4(),
+            'id': uuid.uuid4(),
             'email': user_data.email,
             'username': user_data.username,
             'name': user_data.name,
             'bio': user_data.bio,
-            'profile_picture': user_data.profile_picture,
             'gender': user_data.gender,
             'birthdate': user_data.birthdate,
             'is_verified': user_data.is_verified,
             'is_superuser': user_data.is_superuser,
             'is_writer': user_data.is_writer,
+            'official_person': user_data.official_person,
+                        'registration_date': user_data.registration_date,
+
             'hashed_password': await self.hash_password(user_data.password),
-            'registration_date': user_data.registration_date,
         }
         if await utils.get_user_by_email(db=self.db, email=user_data.email):
             raise HTTPException(status_code=400, detail='User with this email exist')
