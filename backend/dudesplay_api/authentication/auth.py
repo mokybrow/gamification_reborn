@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dudesplay_api.database import get_async_session
 from dudesplay_api.models.auth_models import Token, User, UserCreate
-from dudesplay_api.schemas.database_scheme import user_table
+from dudesplay_api.schemas.database import user_table
 from dudesplay_api.settings import get_settings
 
 from .utils import AuthUtils

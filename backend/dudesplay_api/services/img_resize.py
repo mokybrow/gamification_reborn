@@ -3,7 +3,7 @@ from pydantic import UUID4
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.database_scheme import user_table
+from ..schemas.database import user_table
 
 
 async def resize_image(filename: str, path_file: str, db: AsyncSession, user_id: UUID4):
