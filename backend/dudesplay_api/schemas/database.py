@@ -54,7 +54,7 @@ user_table = Table(
 
 
 game_table = Table(
-    'game',
+    'games',
     metadata,
     Column('id', UUID, primary_key=True, default=uuid.uuid4(), index=True),
     Column('title', String, nullable=False),
@@ -67,6 +67,5 @@ game_table = Table(
     Column('platform_name', ARRAY(String), nullable=True, unique=False),
     Column('parent_platform', ARRAY(String), nullable=True, unique=False),
     Column('genre', ARRAY(String), nullable=True, unique=False),
-    Column('tags', ARRAY(String), nullable=True, unique=False),
     Column('esrb_rating', String, nullable=True, unique=False),
 )

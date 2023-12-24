@@ -25,7 +25,7 @@ async def get_filters_bd(db: AsyncSession, genre: str | None = None, platform: s
 
 
 async def game_parser(db: AsyncSession) -> Any:
-    count = 0
+    count = 14890
     while count < 50000:
         r = requests.get(
             f'https://api.rawg.io/api/games?key=1ae731eafea74e33907d89607c9483cb&page={count}&page_size=50'
@@ -35,7 +35,6 @@ async def game_parser(db: AsyncSession) -> Any:
         parent_platforms = []
         platform_name = []
         genres = []
-        tags = []
         for i in r.json()['results']:
 
             for k in i['genres']:
@@ -48,13 +47,11 @@ async def game_parser(db: AsyncSession) -> Any:
                 platform.append(j['platform']['slug'])
                 platform_name.append(j['platform']['name'])
 
-            for w in i['tags']:
-                tags.append(w['name'])
 
             query = select(game_table.c.slug).where(game_table.c.slug == i['slug'])
             result = await db.execute(query)
             if result.all():
-                count += 1
+                pass
             query = select(game_table.c.slug).where(game_table.c.slug == i['slug'])
             result = await db.execute(query)
             if not result.all():
@@ -79,7 +76,6 @@ async def game_parser(db: AsyncSession) -> Any:
                     platform_name=platform_name,
                     parent_platform=parent_platforms,
                     genre=genres,
-                    tags=tags,
                     esrb_rating=esrb_rating,
                 )
 
