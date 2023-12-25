@@ -6,7 +6,7 @@ from fastapi import (
 from fastapi.responses import FileResponse
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from dudesplay_api.integrations.get_filters import game_parser, get_filters_bd
+from dudesplay_api.integrations.get_filters import game_parser, get_filters_bd, norm_data
 
 from dudesplay_api.database import get_async_session
 
@@ -32,3 +32,9 @@ async def parse_games(
     db: AsyncSession = Depends(get_async_session),
 ):
     await game_parser(db=db)
+
+
+@router.get('/normilize_data')
+async def normilize_data(db: AsyncSession = Depends(get_async_session)):
+    await norm_data(db=db)
+    return None

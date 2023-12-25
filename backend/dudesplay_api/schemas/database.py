@@ -30,13 +30,12 @@ user_table = Table(
     'users',
     metadata,
     Column(
-        'id',
+        'user_id',
         UUID,
         primary_key=True,
         unique=True,
         nullable=False,
         index=True,
-        default=uuid.uuid4
     ),
     Column('email', String, unique=True, nullable=False),
     Column('username', String, unique=True, nullable=False),
@@ -69,3 +68,143 @@ game_table = Table(
     Column('genre', ARRAY(String), nullable=True, unique=False),
     Column('esrb_rating', String, nullable=True, unique=False),
 )
+
+#######
+
+platforms = Table(
+    'platforms',
+    metadata,
+    Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+        Column(
+        'platform_name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'platform_slug',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'platform_name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+)
+
+game_platforms = Table(
+    'game_platforms',
+    metadata,
+    Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.id', ondelete='CASCADE')
+    ),
+    Column(
+        'platform_id',
+        UUID,
+        ForeignKey('platforms.id', ondelete='CASCADE')
+    ),
+    UniqueConstraint('game_id', 'platform_id', name='unique_platform')
+)
+
+genres = Table(
+    'genres',
+    metadata,
+    Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'name',
+        String(100),
+        nullable=False,
+        unique=True
+    ),
+        Column(
+        'name_ru',
+        String(100),
+        nullable=True
+    ),
+    Column('code', Integer, nullable=True),
+)
+
+game_genres = Table(
+    'game_genres',
+    metadata,
+    Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.id', ondelete='CASCADE')
+    ),
+    Column(
+        'genre_id',
+        UUID,
+        ForeignKey('genres.id', ondelete='CASCADE')
+    ),
+    UniqueConstraint('game_id', 'genre_id', name='unique_genre')
+)
+
+
+age_ratings = Table(
+    'age_ratings',
+    metadata,
+    Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'type',
+        String(100),
+        nullable=True,
+        unique=True
+    ),
+        Column(
+        'name',
+        String(100),
+        nullable=False
+    ),
+    Column('code', Integer, nullable=True),
+)
+
+age_rating_games = Table(
+    'age_rating_games',
+    metadata,
+        Column(
+        'id',
+        UUID,
+        primary_key=True
+    ),
+    Column(
+        'game_id',
+        UUID,
+        ForeignKey('games.id', ondelete='CASCADE')
+    ),
+    Column(
+        'age_rating_id',
+        UUID,
+        ForeignKey('age_ratings.id', ondelete='CASCADE')
+    ),
+    UniqueConstraint('game_id', 'age_rating_id', name='unique_age')
+)
+
+#######
