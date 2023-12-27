@@ -136,8 +136,7 @@ class AuthService:
             'is_superuser': user_data.is_superuser,
             'is_writer': user_data.is_writer,
             'official_person': user_data.official_person,
-                        'registration_date': user_data.registration_date,
-
+            'registration_date': user_data.registration_date,
             'hashed_password': await self.hash_password(user_data.password),
         }
         if await utils.get_user_by_email(db=self.db, email=user_data.email):

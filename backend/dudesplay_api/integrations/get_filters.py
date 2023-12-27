@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.database import game_table, age_ratings, platforms, genres
+from ..schemas.database import game_table, age_ratings, platforms, genres, age_rating_games, game_genres, game_platforms
 import datetime as DT
 import requests
 
@@ -93,60 +93,137 @@ async def game_parser(db: AsyncSession) -> Any:
 async def norm_data(db: AsyncSession):
     offset = 0
     end_of_base = True
+    # while end_of_base:
+    #     query = (select(game_table)
+    #                     .offset(offset)
+    #                     .limit(1))
+    #     result = await db.execute(query)
+    #     result = result.all()
+    #     if result:
+    #         print(result[0][0])
+
+    #         # print(result[0][7]) #слаг
+    #         # print(result[0][8]) #имя
+    #         if result[0][7]:
+    #             for name, slug in zip(result[0][8], result[0][7]):
+    #                 query_slug = select(platforms.c.platform_slug).where(platforms.c.platform_slug==slug)
+    #                 query_slug = await db.execute(query_slug)
+    #                 query_slug = query_slug.all()
+    #                 if not query_slug:
+    #                     stmt = insert(platforms).values(
+    #                                     id = uuid.uuid4(),
+    #                                     platform_name=name,
+    #                                     platform_slug=slug
+    #                                 )
+    #                     await db.execute(stmt)
+    #                     await db.commit()
+
+    #         # print(result[0][10]) #жанр
+    #         if result[0][10]:
+    #             for genre_name in result[0][10]:
+    #                 query_genre = select(genres.c.name).where(genres.c.name==genre_name)
+    #                 query_genre = await db.execute(query_genre)
+    #                 query_genre = query_genre.all()
+    #                 if not query_genre:
+    #                     stmt = insert(genres).values(
+    #                                     id = uuid.uuid4(),
+    #                                     name=genre_name,
+
+    #                                 )
+    #                     await db.execute(stmt)
+    #                     await db.commit()
+    #         # print(result[0][11]) #возрастной рейтинг
+    #         if result[0][11]:
+    #             query_age = select(age_ratings.c.name).where(age_ratings.c.name==result[0][11])
+    #             query_age = await db.execute(query_age)
+    #             query_age = query_age.all()
+    #             if not query_age:
+    #                 stmt = insert(age_ratings).values(
+    #                                     id = uuid.uuid4(),
+    #                                     name=result[0][11],
+    #                                 )
+    #                 await db.execute(stmt)
+    #                 await db.commit()
+
+    #         offset+=1
+
+    #     else:
+    #         end_of_base = False
+
     while end_of_base:
-        query = (select(game_table)
-                        .offset(offset)
-                        .limit(1))
+
+        ##Добавление возрастных рейтнгов
+        query = (select(game_table).where(game_table.c.platform!=None))
         result = await db.execute(query)
         result = result.all()
+
+        # print(check_pair)
         if result:
-            print(result[0][0])
+            for j in result:
+                # if j[11]:
+                #     age_rate_id = (select(age_ratings).where(age_ratings.c.name==j[11]))
+                #     age_rate_id = await db.execute(age_rate_id)
+                #     age_rate_id = age_rate_id.all()
+                #     check_pair = (select(age_rating_games).where(age_rating_games.c.game_id==j[0], age_rating_games.c.age_rating_id==age_rate_id[0][0]))
+                #     check_pair = await db.execute(check_pair)
+                #     check_pair = check_pair.all()
+                #     if not check_pair:
+                #         # print(result[0][11])
+                #         # print(result[0][0])
+                #         # print(age_rate_id[0][0])
+                #         stmt = insert(age_rating_games).values(
+                #                                     id = uuid.uuid4(),
+                #                                     game_id=j[0],
+                #                                     age_rating_id=age_rate_id[0][0]
+                #                                 )
+                #         await db.execute(stmt)
+                #         await db.commit()
+                # # ##Добавление жанров
 
-            # print(result[0][7]) #слаг
-            # print(result[0][8]) #имя
-            if result[0][7]:
-                for name, slug in zip(result[0][8], result[0][7]):
-                    query_slug = select(platforms.c.platform_slug).where(platforms.c.platform_slug==slug)
-                    query_slug = await db.execute(query_slug)
-                    query_slug = query_slug.all()
-                    if not query_slug:
-                        stmt = insert(platforms).values(
-                                        id = uuid.uuid4(),
-                                        platform_name=name,
-                                        platform_slug=slug
-                                    )
-                        await db.execute(stmt)
-                        await db.commit()
-
-            # print(result[0][10]) #жанр
-            if result[0][10]:
-                for genre_name in result[0][10]:
-                    query_genre = select(genres.c.name).where(genres.c.name==genre_name)
-                    query_genre = await db.execute(query_genre)
-                    query_genre = query_genre.all()
-                    if not query_genre:
-                        stmt = insert(genres).values(
-                                        id = uuid.uuid4(),
-                                        name=genre_name,
-
-                                    )
-                        await db.execute(stmt)
-                        await db.commit()
-            # print(result[0][11]) #возрастной рейтинг
-            if result[0][11]:
-                query_age = select(age_ratings.c.name).where(age_ratings.c.name==result[0][11])
-                query_age = await db.execute(query_age)
-                query_age = query_age.all()
-                if not query_age:
-                    stmt = insert(age_ratings).values(
-                                        id = uuid.uuid4(),
-                                        name=result[0][11],
-                                    )
-                    await db.execute(stmt)
-                    await db.commit()
-
+                # if j[10]:
+                #     end_of_base = False
+                #     for genre in j[10]:
+                #         genre_id = (select(genres).where(genres.c.name==genre))
+                #         genre_id = await db.execute(genre_id)
+                #         genre_id = genre_id.all()
+                #         check_pair = (select(game_genres).where(game_genres.c.game_id==j[0], game_genres.c.genre_id==genre_id[0][0]))
+                #         check_pair = await db.execute(check_pair)
+                #         check_pair = check_pair.all()
+                #         if not check_pair:
+                #                 # print(result[0][11])
+                #                 # print(result[0][0])
+                #                 # print(age_rate_id[0][0])
+                #                 stmt = insert(game_genres).values(
+                #                                             id = uuid.uuid4(),
+                #                                             game_id=j[0],
+                #                                             genre_id=genre_id[0][0]
+                #                                         )
+                #                 await db.execute(stmt)
+                #                 await db.commit()
+                # # ##Добавление платформ
+                if j[7]:
+                    end_of_base = False
+                    for platform in j[7]:
+                        platform_id = (select(platforms).where(platforms.c.platform_slug==platform))
+                        platform_id = await db.execute(platform_id)
+                        platform_id = platform_id.all()
+                        check_pair = (select(game_platforms).where(game_platforms.c.game_id==j[0], game_platforms.c.platform_id==platform_id[0][0]))
+                        check_pair = await db.execute(check_pair)
+                        check_pair = check_pair.all()
+                        if not check_pair:
+                                # print(result[0][11])
+                                # print(result[0][0])
+                                # print(age_rate_id[0][0])
+                                stmt = insert(game_platforms).values(
+                                                            id = uuid.uuid4(),
+                                                            game_id=j[0],
+                                                            platform_id=platform_id[0][0]
+                                                        )
+                                await db.execute(stmt)
+                                await db.commit()
+                # if result:
+                #     print(result[0][7])
+            print(offset)
             offset+=1
-
         else:
             end_of_base = False
-        # print(result[0][11]) # тэги

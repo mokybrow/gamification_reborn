@@ -30,7 +30,7 @@ user_table = Table(
     'users',
     metadata,
     Column(
-        'user_id',
+        'id',
         UUID,
         primary_key=True,
         unique=True,
