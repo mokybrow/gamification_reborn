@@ -2,9 +2,9 @@ from functools import lru_cache
 
 from fastapi import APIRouter, FastAPI
 
-from dudesplay_api.transport.auth_router import router as auth_router
-from dudesplay_api.transport.user_router import router as user_router
-from dudesplay_api.transport.experemental import router as exp
+from api.transport.auth_router import router as auth_router
+from api.transport.user_router import router as user_router
+from api.transport.experemental import router as exp
 
 from .settings import get_settings
 

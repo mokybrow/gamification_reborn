@@ -10,10 +10,10 @@ from pydantic import ValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dudesplay_api.database import get_async_session
-from dudesplay_api.models.auth_models import Token, User, UserCreate
-from dudesplay_api.schemas.database import user_table
-from dudesplay_api.settings import get_settings
+from api.database import get_async_session
+from api.models.auth_models import Token, User, UserCreate
+from api.schemas.database import user_table
+from api.settings import get_settings
 
 from .utils import AuthUtils
 

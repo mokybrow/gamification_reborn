@@ -9,10 +9,10 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dudesplay_api.authentication.auth import AuthService, get_current_user
-from dudesplay_api.authentication.utils import AuthUtils
-from dudesplay_api.database import get_async_session
-from dudesplay_api.models.msg_models import Msg
+from api.authentication.auth import AuthService, get_current_user
+from api.authentication.utils import AuthUtils
+from api.database import get_async_session
+from api.models.msg_models import Msg
 
 from ..models.auth_models import (
     ResetPassword,

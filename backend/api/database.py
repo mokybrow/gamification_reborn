@@ -2,7 +2,7 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from dudesplay_api.settings import get_settings
+from api.settings import get_settings
 
 settings = get_settings()
 

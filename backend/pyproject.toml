@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "gamification-reborn"
+name = "mbrw"
 version = "0.1.0"
 description = ""
 authors = ["Mikhail Panin <mokybrow@gmail.com>"]

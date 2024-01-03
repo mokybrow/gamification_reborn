@@ -12,13 +12,13 @@ from fastapi.responses import FileResponse
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dudesplay_api.authentication.auth import get_current_user
-from dudesplay_api.authentication.utils import AuthUtils
-from dudesplay_api.database import get_async_session
-from dudesplay_api.integrations.get_user_img import get_user_img
-from dudesplay_api.models.auth_models import User
-from dudesplay_api.services.img_resize import resize_image
-from dudesplay_api.services.user_img_upload import save_upload_cover
+from api.authentication.auth import get_current_user
+from api.authentication.utils import AuthUtils
+from api.database import get_async_session
+from api.integrations.get_user_img import get_user_img
+from api.models.auth_models import User
+from api.services.img_resize import resize_image
+from api.services.user_img_upload import save_upload_cover
 
 router = APIRouter(
     prefix='/user',

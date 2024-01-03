@@ -6,9 +6,9 @@ from fastapi import (
 from fastapi.responses import FileResponse
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
-from dudesplay_api.integrations.get_filters import game_parser, get_filters_bd, norm_data
+from api.integrations.get_filters import game_parser, get_filters_bd, norm_data
 
-from dudesplay_api.database import get_async_session
+from api.database import get_async_session
 
 
 router = APIRouter(
@@ -26,6 +26,7 @@ async def get_db_filters(
     user_img = await get_filters_bd(db=db, genre=genre, platform=platform)
     print(user_img)
     return None
+
 
 @router.get('/admin/game_parser')
 async def parse_games(

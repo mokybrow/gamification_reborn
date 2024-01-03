@@ -2,12 +2,12 @@
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dudesplay_api.models.auth_models import (
+from api.models.auth_models import (
     User,
     UserUpdate,
     UserUpdateImg,
 )
-from dudesplay_api.schemas.database import user_table
+from api.schemas.database import user_table
 
 
 class AuthUtils:
