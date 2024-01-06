@@ -1,12 +1,11 @@
-
 from pydantic import UUID4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.database import user_table
+from ..schemas.database import user_table, profile_pictures
 
 
-async def get_user_img(db: AsyncSession, user_id: UUID4):
-    query = select(user_table.c.profile_picture).where(user_table.c.user_id == user_id)
+async def get_user_img(db: AsyncSession, id: UUID4):
+    query = select(profile_pictures.c.og_picture_path).where(profile_pictures.c.user_id == id)
     result = await db.execute(query)
     return result.all()

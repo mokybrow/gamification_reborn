@@ -1,12 +1,14 @@
+import datetime as DT
+import uuid
 
 from typing import Any
-import uuid
+
+import requests
+
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.database import game_table, age_ratings, platforms, genres, age_rating_games, game_genres, game_platforms
-import datetime as DT
-import requests
+from ..schemas.database import age_rating_games, age_ratings, game_genres, game_platforms, game_table, genres, platforms
 
 
 async def get_filters_bd(db: AsyncSession, genre: str | None = None, platform: str | None = None):
@@ -36,7 +38,6 @@ async def game_parser(db: AsyncSession) -> Any:
         platform_name = []
         genres = []
         for i in r.json()['results']:
-
             for k in i['genres']:
                 genres.append(k['name'])
 
@@ -46,7 +47,6 @@ async def game_parser(db: AsyncSession) -> Any:
             for j in i['platforms']:
                 platform.append(j['platform']['slug'])
                 platform_name.append(j['platform']['name'])
-
 
             query = select(game_table.c.slug).where(game_table.c.slug == i['slug'])
             result = await db.execute(query)
@@ -151,9 +151,8 @@ async def norm_data(db: AsyncSession):
     #         end_of_base = False
 
     while end_of_base:
-
         ##Добавление возрастных рейтнгов
-        query = (select(game_table).where(game_table.c.platform!=None))
+        query = select(game_table).where(game_table.c.platform != None)
         result = await db.execute(query)
         result = result.all()
 
@@ -204,26 +203,26 @@ async def norm_data(db: AsyncSession):
                 if j[7]:
                     end_of_base = False
                     for platform in j[7]:
-                        platform_id = (select(platforms).where(platforms.c.platform_slug==platform))
+                        platform_id = select(platforms).where(platforms.c.platform_slug == platform)
                         platform_id = await db.execute(platform_id)
                         platform_id = platform_id.all()
-                        check_pair = (select(game_platforms).where(game_platforms.c.game_id==j[0], game_platforms.c.platform_id==platform_id[0][0]))
+                        check_pair = select(game_platforms).where(
+                            game_platforms.c.game_id == j[0], game_platforms.c.platform_id == platform_id[0][0]
+                        )
                         check_pair = await db.execute(check_pair)
                         check_pair = check_pair.all()
                         if not check_pair:
-                                # print(result[0][11])
-                                # print(result[0][0])
-                                # print(age_rate_id[0][0])
-                                stmt = insert(game_platforms).values(
-                                                            id = uuid.uuid4(),
-                                                            game_id=j[0],
-                                                            platform_id=platform_id[0][0]
-                                                        )
-                                await db.execute(stmt)
-                                await db.commit()
+                            # print(result[0][11])
+                            # print(result[0][0])
+                            # print(age_rate_id[0][0])
+                            stmt = insert(game_platforms).values(
+                                id=uuid.uuid4(), game_id=j[0], platform_id=platform_id[0][0]
+                            )
+                            await db.execute(stmt)
+                            await db.commit()
                 # if result:
                 #     print(result[0][7])
             print(offset)
-            offset+=1
+            offset += 1
         else:
             end_of_base = False

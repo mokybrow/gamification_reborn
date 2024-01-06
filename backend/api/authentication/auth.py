@@ -19,7 +19,7 @@ from .utils import AuthUtils
 
 settings = get_settings()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/sign-in')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/login')
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
@@ -182,7 +182,8 @@ class AuthService:
         )
         user_valid = await self.db.execute(
             select(user_table).filter(
-                user_table.c.email == email, user_table.c.is_verified is True,
+                user_table.c.email == email,
+                user_table.c.is_verified is True,
             ),
         )
         if user_valid.all():

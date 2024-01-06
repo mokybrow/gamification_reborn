@@ -1,11 +1,6 @@
 from typing import Annotated, Any
 
-from fastapi import (
-    APIRouter,
-    Body,
-    Depends,
-    HTTPException,
-)
+from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,15 +9,7 @@ from api.authentication.utils import AuthUtils
 from api.database import get_async_session
 from api.models.msg_models import Msg
 
-from ..models.auth_models import (
-    ResetPassword,
-    Token,
-    User,
-    UserCreate,
-    UserUpdate,
-    VerifyEmail,
-    VerifyEmailToken,
-)
+from ..models.auth_models import ResetPassword, Token, User, UserCreate, UserUpdate, VerifyEmail, VerifyEmailToken
 
 router = APIRouter(
     prefix='/auth',
@@ -50,7 +37,8 @@ async def get_user(user: User = Depends(get_current_user)):
 
 @router.post('/verify/email/request', response_model=Token)
 async def verify_user_email_request(
-    email: VerifyEmail, service: AuthService = Depends(),
+    email: VerifyEmail,
+    service: AuthService = Depends(),
 ):
     result = await service.verify_email_request(email=email.email)
     return result
