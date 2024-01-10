@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  position: fixed;
+  align-items: center;
+  background-color: #FFB841;
+  height: 48px;
+  width: 100%;
+  padding: 0 100px 0 100px;
+  justify-content: space-between;
+}
+
+.profile{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.search{
+  width: 712px;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background-color: #F5F5F5;
+  padding: 4px 12px;
+  font-size: 20px;
+}
+
+.settings{
+  display: flex;
+  width: 32px;
+  height: 32px;
+  background-color: #F5F5F5;
+  align-items: center;
+  border-radius: 6px;
+  justify-content: center;
+  cursor: pointer;
+}
