@@ -1,0 +1,35 @@
+.container {
+  position: fixed;
+  margin-top: 89px;
+  margin-left: 105px;
+}
+
+.navbar {
+  display: flex;
+  list-style: none;
+  flex-direction: column;
+  gap: 13px;
+  font-size: 20px;
+}
+
+.navbar li {
+  padding: 0 9px 0 0px;
+  border-radius: 6px;
+  align-items: center;
+}
+
+.navbar li a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.navbar li a img {
+  display: flex;
+  margin: 12px 12px 12px 5px;
+}
+
+
+.navbar li:hover {
+  background-color: #fff;
+}

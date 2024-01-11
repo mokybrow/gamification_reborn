@@ -9,7 +9,7 @@
   justify-content: space-between;
 }
 
-.profile{
+.profile {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -17,7 +17,25 @@
   gap: 12px;
 }
 
-.search{
+.container {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.container img {
+  display: flex;
+  position: absolute;
+  right: 0;
+  margin-right: 7px;
+  cursor: pointer;
+}
+
+.container img:hover {
+  transform: scale(1.05);
+}
+
+.search {
   width: 712px;
   height: 36px;
   border-radius: 6px;
@@ -25,9 +43,11 @@
   background-color: #F5F5F5;
   padding: 4px 12px;
   font-size: 20px;
+  font-family: inherit;
 }
 
-.settings{
+
+.settings {
   display: flex;
   width: 32px;
   height: 32px;
@@ -36,4 +56,8 @@
   border-radius: 6px;
   justify-content: center;
   cursor: pointer;
+}
+
+.settings img:hover {
+  transform: rotate(30deg);
 }

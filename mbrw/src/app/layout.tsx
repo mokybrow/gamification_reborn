@@ -2,8 +2,9 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header/Header'
+import Navbar from '@/components/Navbar/Navbar'
 
-const inter = Montserrat({ subsets: ['latin'] })
+const montserrat = Montserrat({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'mbrw',
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
 
-      <body className={inter.className}>
-        <Header />{children}</body>
+      <body className={montserrat.className}>
+        <Header />
+        <Navbar />
+        {children}</body>
     </html>
   )
 }
