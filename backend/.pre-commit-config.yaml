@@ -5,25 +5,25 @@ repos:
         name: black
         entry: black
         language: system
-        files: ^(quick_support_api|front_api_bot|tests)/.+\.py$
+        files: ^(backend|tests)/.+\.py$
 
       - id: isort
         name: isort
         entry: isort
         language: system
-        files: ^(quick_support_api|front_api_bot|tests)/.+\.py$
+        files: ^(backend|tests)/.+\.py$
 
       - id: ruff
         name: ruff
         entry: ruff check --fix
         language: system
-        files: ^(quick_support_api|front_api_bot|tests)/.+\.py$
+        files: ^(backend|tests)/.+\.py$
 
       - id: mypy
         name: mypy
         entry: mypy
         language: system
-        files: ^(quick_support_api|front_api_bot|tests)/.+\.py$
+        files: ^(backend|tests)/.+\.py$
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 'v4.3.0'
