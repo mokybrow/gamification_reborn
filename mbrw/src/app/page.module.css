@@ -1,8 +1,34 @@
 .main {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6rem;
-  min-height: 110vh;
+  flex-direction: row;
+  margin-top: 41px;
+}
+
+.maingrid {
+  display: grid;
+  grid-template-columns: 712px 216px;
+  column-gap: 48px;
+}
+
+.mainheader {
+  display: flex;
+  font-size: 24px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.minorheader {
+  display: flex;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+
+@media (max-width: 1300px) {
+  .maingrid {
+    display: flex;
+
+  }
 }
