@@ -26,9 +26,19 @@
 }
 
 
-@media (max-width: 1300px) {
+@media (max-width: 1440px) {
   .maingrid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 712px ;
+    column-gap: 48px;
+  }
+}
 
+
+@media (max-width: 1000px) {
+  .maingrid {
+    display: grid;
+    grid-template-columns: 1fr ;
+    column-gap: 48px;
   }
 }

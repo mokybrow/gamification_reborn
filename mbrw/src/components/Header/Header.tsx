@@ -6,10 +6,8 @@ import * as settings from '@/static/settings.png';
 import * as search from '@/static/search.png';
 import styles from './header.module.css'
 import Link from "next/link";
-import { Montserrat } from 'next/font/google'
 
 
-const montserrat = Montserrat({ subsets: ['latin'] })
 
 const Header = () => {
   return (

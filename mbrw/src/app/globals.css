@@ -34,26 +34,24 @@ a {
   gap: 48px;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1440px) {
   .conten-layout {
     display: grid;
-    max-width: 786px;
-    display: grid;
-    grid-template-columns: 1fr;
+    max-width: 1024px;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
-    min-height: 200vh;
     margin-left: auto;
     margin-right: auto;
-    justify-content: space-between;
     position: relative;
     gap: 48px;
+    align-items: flex-start;
+    padding: 24px;
   }
 }
 
-@media (max-width: 834px) {
+@media (max-width: 1000px) {
   .conten-layout {
     display: flex;
-    max-width: 786px;
     display: grid;
     grid-template-columns: 1fr;
     width: 100%;
