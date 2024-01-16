@@ -2,7 +2,7 @@ from pydantic import UUID4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.database import user_table, profile_pictures
+from ..schemas.database import profile_pictures, user_table
 
 
 async def get_user_img(db: AsyncSession, id: UUID4):

@@ -11,7 +11,7 @@ class BaseUser(BaseModel):
     name: Optional[str]
     bio: Optional[str] = None
     gender: Optional[str] = None
-    birthdate: datetime.date = None
+    birthdate: Optional[datetime.date] = None
     is_verified: Optional[bool] = False
     is_superuser: Optional[bool] = False
     is_writer: Optional[bool] = False

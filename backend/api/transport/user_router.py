@@ -10,12 +10,12 @@ from api.authentication.auth import get_current_user
 from api.authentication.utils import AuthUtils
 from api.database import get_async_session
 from api.integrations.get_user_img import get_user_img
+from api.integrations.users import change_user_data
 from api.models.auth_models import User
+from api.models.msg_models import Msg
+from api.models.users import UserData
 from api.services.img_resize import resize_image
 from api.services.user_img_upload import save_upload_cover
-from api.integrations.users import change_user_data
-from api.models.users import UserData
-from api.models.msg_models import Msg
 
 router = APIRouter(
     prefix='/users',
@@ -72,14 +72,16 @@ async def get_user_photo_router(
 @router.post(
     '/change/about/me/',
     description='Обновление информации из раздела "обо мне", имя, биография, дата рождения',
-    response_model=Msg
+    response_model=Msg,
 )
 async def update_user_info_router(
     user_data: UserData,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
-    result = await change_user_data(id=user.id,name=user_data.name, bio=user_data.bio, birthdate=user_data.birthdate, db=db)
+    result = await change_user_data(
+        id=user.id, name=user_data.name, bio=user_data.bio, birthdate=user_data.birthdate, db=db
+    )
     if result:
         return {'msg': 'User data update success'}
     return {'msg': 'Something went wrong'}
